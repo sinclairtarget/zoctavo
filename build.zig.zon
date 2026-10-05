@@ -1,6 +1,12 @@
 .{
     .name = .zoctavo,
     .version = "0.0.1-dev",
+    .dependencies = .{
+        .atrus = .{
+            .url = "https://github.com/sinclairtarget/libatrus/archive/refs/tags/v0.10.1.tar.gz",
+            .hash = "atrus-0.10.1-SVSDEoMKEQAtXaycGWiVo5Ikrz4mZbTWjiuSEJwz5qy7",
+        },
+    },
     .minimum_zig_version = "0.16.0",
     .paths = .{""},
     .fingerprint = 0xfb64d46c337f64a7,
