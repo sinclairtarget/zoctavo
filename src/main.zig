@@ -72,6 +72,15 @@ fn runBuild(io: Io, alloc: Allocator, absolute_cwd: []const u8) !void {
                     .{config.build.dir},
                 );
             },
+            zoctavo.build.BuildError.OpenBuildDirectoryFailed => {
+                die(
+                    "failed to open build directory \"{s}\"",
+                    .{config.build.dir},
+                );
+            },
+            zoctavo.build.BuildError.OpenFileFailed => {
+                die("I/O error during build", .{});
+            },
             else => |e| return e,
         }
     };
