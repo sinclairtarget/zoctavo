@@ -37,6 +37,9 @@ pub fn main(init: std.process.Init) UncaughtError!void {
         .build => {
             try runBuild(init.io, alloc);
         },
+        .clean => {
+            try runClean(init.io, alloc);
+        },
         .config => {
             try printConfig(init.io, alloc, stdout);
         },
@@ -55,9 +58,23 @@ fn runBuild(io: Io, alloc: Allocator) !void {
     const config = try loadConfig(io, alloc);
     zoctavo.build.run(io, alloc, config) catch |err| {
         switch (err) {
-            zoctavo.build.Error.CreateBuildDirectoryFailed => {
+            zoctavo.build.BuildError.CreateBuildDirectoryFailed => {
                 die(
                     "failed to create build directory \"{s}\"",
+                    .{config.build.dir},
+                );
+            },
+        }
+    };
+}
+
+fn runClean(io: Io, alloc: Allocator) !void {
+    const config = try loadConfig(io, alloc);
+    zoctavo.build.clean(io, config) catch |err| {
+        switch (err) {
+            zoctavo.build.CleanError.DeleteBuildDirectoryFailed => {
+                die(
+                    "failed to clean build directory \"{s}\"",
                     .{config.build.dir},
                 );
             },

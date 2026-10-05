@@ -4,23 +4,39 @@ const Io = std.Io;
 
 const book = @import("book.zig");
 
-pub const Error = error{
+pub const BuildError = error{
     CreateBuildDirectoryFailed,
 };
 
-pub fn run(io: Io, alloc: Allocator, config: book.Config) Error!void {
+pub const CleanError = error{
+    DeleteBuildDirectoryFailed,
+};
+
+pub fn run(io: Io, alloc: Allocator, config: book.Config) BuildError!void {
     _ = alloc;
 
-    try ensureBuildDir(io, config.build.dir);
+    try ensureDir(io, config.build.dir);
 }
 
-/// Ensure the build output dir exists.
-fn ensureBuildDir(io: Io, dirpath: []const u8) !void {
+pub fn clean(io: Io, config: book.Config) CleanError!void {
+    try removeDirRecursive(io, config.build.dir);
+}
+
+/// Ensure the given directory exists.
+fn ensureDir(io: Io, dirpath: []const u8) !void {
     const cwd = Io.Dir.cwd();
     cwd.createDir(io, dirpath, .fromMode(0o755)) catch |err| {
         switch (err) {
             Io.Dir.CreateDirError.PathAlreadyExists => {},
-            else => return Error.CreateBuildDirectoryFailed,
+            else => return BuildError.CreateBuildDirectoryFailed,
         }
+    };
+}
+
+/// Recursively remove the given directory.
+fn removeDirRecursive(io: Io, dirpath: []const u8) !void {
+    const cwd = Io.Dir.cwd();
+    cwd.deleteTree(io, dirpath) catch {
+        return CleanError.DeleteBuildDirectoryFailed;
     };
 }

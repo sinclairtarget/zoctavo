@@ -3,6 +3,7 @@ const Io = std.Io;
 
 pub const Subcommand = enum {
     build,
+    clean,
     config,
     help,
     version,
@@ -12,6 +13,7 @@ pub const Invocation = struct {
     verbose: bool,
     subcommand: union(Subcommand) {
         build: void,
+        clean: void,
         config: void,
         help: void,
         version: void,
@@ -36,9 +38,10 @@ const top_usage =
     \\
     \\Subcommands:
     \\  build    Builds the book. (default)
-    \\  config   Print book config.
-    \\  help     Print usage.
-    \\  version  Print version.
+    \\  clean    Cleans a built book.
+    \\  config   Prints the book config.
+    \\  help     Prints usage.
+    \\  version  Prints version.
     \\
     \\For more information on a subcommand, run `zoctavo help <subcommand>`.
     \\
@@ -78,6 +81,8 @@ pub fn parse(
     }) {
         if (std.mem.eql(u8, arg, "build")) {
             invocation.subcommand = .{ .build = {} };
+        } else if (std.mem.eql(u8, arg, "clean")) {
+            invocation.subcommand = .{ .clean = {} };
         } else if (std.mem.eql(u8, arg, "config")) {
             invocation.subcommand = .{ .config = {} };
         } else if (std.mem.eql(u8, arg, "help")) {
