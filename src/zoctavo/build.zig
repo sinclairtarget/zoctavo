@@ -4,22 +4,35 @@ const Io = std.Io;
 
 const book = @import("book.zig");
 
+/// Defines build parameters and location for the build.
+pub const Workspace = struct {
+    absolute_working_dir: []const u8,
+    config: book.Config,
+
+    fn resolveBuildDir(self: Workspace, alloc: Allocator) ![]const u8 {
+        std.debug.assert(std.fs.path.isAbsolute(self.absolute_working_dir));
+        return try std.fs.path.join(
+            alloc,
+            &.{ self.absolute_working_dir, self.config.build.dir },
+        );
+    }
+};
+
 pub const BuildError = error{
     CreateBuildDirectoryFailed,
-};
+} || Allocator.Error;
 
 pub const CleanError = error{
     DeleteBuildDirectoryFailed,
-};
+} || Allocator.Error;
 
-pub fn run(io: Io, alloc: Allocator, config: book.Config) BuildError!void {
-    _ = alloc;
-
-    try ensureDir(io, config.build.dir);
+pub fn run(io: Io, alloc: Allocator, ws: Workspace) BuildError!void {
+    const build_dir = try ws.resolveBuildDir(alloc);
+    try ensureDir(io, build_dir);
 }
 
-pub fn clean(io: Io, config: book.Config) CleanError!void {
-    try removeDirRecursive(io, config.build.dir);
+pub fn clean(io: Io, alloc: Allocator, ws: Workspace) CleanError!void {
+    try removeDirRecursive(io, try ws.resolveBuildDir(alloc));
 }
 
 /// Ensure the given directory exists.

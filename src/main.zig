@@ -32,13 +32,17 @@ pub fn main(init: std.process.Init) UncaughtError!void {
     var stdout_writer = Io.File.stdout().writer(init.io, &stdout_buffer);
     const stdout = &stdout_writer.interface;
 
+    const absolute_cwd = std.process.currentPathAlloc(init.io, alloc) catch {
+        die("failed to get cwd", .{});
+    };
+
     // Dispatch on subcommand.
     switch (invocation.subcommand) {
         .build => {
-            try runBuild(init.io, alloc);
+            try runBuild(init.io, alloc, absolute_cwd);
         },
         .clean => {
-            try runClean(init.io, alloc);
+            try runClean(init.io, alloc, absolute_cwd);
         },
         .config => {
             try printConfig(init.io, alloc, stdout);
@@ -54,9 +58,13 @@ pub fn main(init: std.process.Init) UncaughtError!void {
     try stdout.flush();
 }
 
-fn runBuild(io: Io, alloc: Allocator) !void {
+fn runBuild(io: Io, alloc: Allocator, absolute_cwd: []const u8) !void {
     const config = try loadConfig(io, alloc);
-    zoctavo.build.run(io, alloc, config) catch |err| {
+    const ws: zoctavo.build.Workspace = .{
+        .absolute_working_dir = absolute_cwd,
+        .config = config,
+    };
+    zoctavo.build.run(io, alloc, ws) catch |err| {
         switch (err) {
             zoctavo.build.BuildError.CreateBuildDirectoryFailed => {
                 die(
@@ -64,13 +72,18 @@ fn runBuild(io: Io, alloc: Allocator) !void {
                     .{config.build.dir},
                 );
             },
+            else => |e| return e,
         }
     };
 }
 
-fn runClean(io: Io, alloc: Allocator) !void {
+fn runClean(io: Io, alloc: Allocator, absolute_cwd: []const u8) !void {
     const config = try loadConfig(io, alloc);
-    zoctavo.build.clean(io, config) catch |err| {
+    const ws: zoctavo.build.Workspace = .{
+        .absolute_working_dir = absolute_cwd,
+        .config = config,
+    };
+    zoctavo.build.clean(io, alloc, ws) catch |err| {
         switch (err) {
             zoctavo.build.CleanError.DeleteBuildDirectoryFailed => {
                 die(
@@ -78,6 +91,7 @@ fn runClean(io: Io, alloc: Allocator) !void {
                     .{config.build.dir},
                 );
             },
+            else => |e| return e,
         }
     };
 }
