@@ -10,7 +10,7 @@ pub const config = @import("config.zig");
 pub const version: []const u8 = build_config.version;
 
 /// Filepath from which to load the ZON book config.
-const config_zon_path = "zoctavo.zon";
+const config_zon_path = "book.zon";
 
 pub const LoadConfigError = error{
     ReadFailed,
@@ -31,7 +31,7 @@ pub fn loadConfig(
         diag,
     ) catch |err| blk: {
         switch (err) {
-            config.LoadError.FileNotFound => break :blk config.Config.default,
+            config.LoadError.FileNotFound => break :blk config.Config{},
             else => |e| return e,
         }
     };

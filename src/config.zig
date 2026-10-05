@@ -5,11 +5,14 @@ const Io = std.Io;
 /// Configuration for a book.
 pub const Config = struct {
     /// Overall title for book.
-    title: []const u8,
-
-    pub const default: Config = .{
-        .title = "My Zoctavo Book",
-    };
+    title: []const u8 = "My Zoctavo Book",
+    /// Path to markdown source directory.
+    src: []const u8 = "src/",
+    /// Build options.
+    build: struct {
+        /// Output dir for built book.
+        dir: []const u8 = "zoctavo-out/",
+    } = .{},
 };
 
 pub const LoadError = error{
