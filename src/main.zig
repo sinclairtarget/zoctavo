@@ -70,12 +70,12 @@ fn printVersion(out: *Io.Writer) Io.Writer.Error!void {
     try out.print("{s}\n", .{zoctavo.version});
 }
 
-fn loadConfig(io: Io, alloc: Allocator) !zoctavo.config.Config {
-    var diag: zoctavo.config.Diagnostics = .{};
-    const config = zoctavo.loadConfig(io, alloc, &diag) catch |err| {
+fn loadConfig(io: Io, alloc: Allocator) !zoctavo.book.Config {
+    var diag: zoctavo.book.Diagnostics = .{};
+    const config = zoctavo.loadBookConfig(io, alloc, &diag) catch |err| {
+        const filename = diag.filepath orelse "book config file";
         switch (err) {
             zoctavo.LoadConfigError.ReadFailed => {
-                const filename = diag.filepath orelse "config file";
                 if (diag.sub_error) |sub_err| {
                     die(
                         "failed to read {s}: {any}",
@@ -86,11 +86,7 @@ fn loadConfig(io: Io, alloc: Allocator) !zoctavo.config.Config {
                 }
             },
             zoctavo.LoadConfigError.ParseFailed => {
-                if (diag.filepath) |fp| {
-                    die("failed to parse {s}", .{fp});
-                } else {
-                    die("failed to parse config file", .{});
-                }
+                die("failed to parse {s}", .{filename});
             },
             else => |e| return e,
         }

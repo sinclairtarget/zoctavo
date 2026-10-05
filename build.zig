@@ -8,14 +8,14 @@ pub fn build(b: *std.Build) void {
     const atrus = b.dependency("atrus", .{ .target = target });
 
     const root_module = b.addModule("zoctavo", .{
-        .root_source_file = b.path("src/root.zig"),
+        .root_source_file = b.path("src/zoctavo/root.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const options = b.addOptions();
     options.addOption([]const u8, "version", pkg_zon.version);
-    root_module.addOptions("config", options);
+    root_module.addOptions("compile_opts", options);
 
     const exe = b.addExecutable(.{
         .name = "zoctavo",
