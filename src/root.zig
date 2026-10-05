@@ -5,6 +5,7 @@ const Io = std.Io;
 const build_config = @import("config");
 
 pub const config = @import("config.zig");
+pub const build = @import("build.zig");
 
 /// Program version.
 pub const version: []const u8 = build_config.version;

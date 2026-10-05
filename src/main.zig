@@ -35,7 +35,7 @@ pub fn main(init: std.process.Init) UncaughtError!void {
     // Dispatch on subcommand.
     switch (invocation.subcommand) {
         .build => {
-            @panic("not yet implemented");
+            try runBuild(init.io, alloc);
         },
         .config => {
             try printConfig(init.io, alloc, stdout);
@@ -49,6 +49,11 @@ pub fn main(init: std.process.Init) UncaughtError!void {
     }
 
     try stdout.flush();
+}
+
+fn runBuild(io: Io, alloc: Allocator) !void {
+    const config = try loadConfig(io, alloc);
+    try zoctavo.build.run(io, alloc, config);
 }
 
 fn printConfig(
