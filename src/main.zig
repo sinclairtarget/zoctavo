@@ -53,7 +53,16 @@ pub fn main(init: std.process.Init) UncaughtError!void {
 
 fn runBuild(io: Io, alloc: Allocator) !void {
     const config = try loadConfig(io, alloc);
-    try zoctavo.build.run(io, alloc, config);
+    zoctavo.build.run(io, alloc, config) catch |err| {
+        switch (err) {
+            zoctavo.build.Error.CreateBuildDirectoryFailed => {
+                die(
+                    "failed to create build directory \"{s}\"",
+                    .{config.build.dir},
+                );
+            },
+        }
+    };
 }
 
 fn printConfig(
