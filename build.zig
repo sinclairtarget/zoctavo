@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const zoctavo_module = b.addModule("zoctavo", .{
-        .root_source_file = b.path("src/root.zig"),
+        .root_source_file = b.path("lib/zoctavo/root.zig"),
         .target = target,
         .optimize = optimize,
         .imports = &.{

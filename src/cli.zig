@@ -18,6 +18,13 @@ pub const Invocation = struct {
         help: void,
         version: void,
     },
+
+    pub fn format(self: Invocation, w: *Io.Writer) Io.Writer.Error!void {
+        try w.print(
+            ".{{ .verbose = {any}, .subcommand = {any} }}",
+            .{ self.verbose, @as(Subcommand, self.subcommand) },
+        );
+    }
 };
 
 pub const ParseError = error{

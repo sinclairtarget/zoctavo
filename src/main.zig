@@ -5,8 +5,14 @@ const Io = std.Io;
 const zoctavo = @import("zoctavo");
 
 const cli = @import("cli.zig");
+const logging = @import("logging.zig");
+const logger = logging.logger;
 
 const UncaughtError = std.mem.Allocator.Error || Io.Writer.Error;
+
+pub const std_options: std.Options = .{
+    .logFn = logging.logRuntime,
+};
 
 pub fn main(init: std.process.Init) UncaughtError!void {
     const alloc = init.arena.allocator();
@@ -34,6 +40,12 @@ pub fn main(init: std.process.Init) UncaughtError!void {
     const absolute_cwd = std.process.currentPathAlloc(init.io, alloc) catch {
         die("failed to get cwd", .{});
     };
+
+    // Set log level
+    if (invocation.verbose) {
+        logging.runtime_log_level = .debug;
+    }
+    logger.debug("Running with invocation: {f}", .{invocation});
 
     // Dispatch on subcommand.
     switch (invocation.subcommand) {

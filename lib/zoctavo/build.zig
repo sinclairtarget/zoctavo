@@ -6,6 +6,7 @@ const utils = @import("utils");
 
 const book = @import("book.zig");
 const summary = @import("summary.zig");
+const logger = @import("logging.zig").logger;
 
 /// Defines build parameters and location for the build.
 pub const Workspace = struct {
@@ -34,6 +35,8 @@ pub const CleanError = error{
 
 /// Run a build.
 pub fn run(io: Io, alloc: Allocator, ws: Workspace) BuildError!void {
+    logger.debug("Running build!", .{});
+
     const build_dirpath = try ws.resolveBuildDir(alloc);
     try ensureDir(io, build_dirpath);
 
