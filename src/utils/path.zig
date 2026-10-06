@@ -14,6 +14,6 @@ pub fn replaceExtAlloc(
     const actual_ext = std.fs.path.extension(filepath);
     std.debug.assert(std.mem.eql(u8, actual_ext, original_ext));
 
-    const stem = filepath[0..filepath.len - original_ext.len];
-    return try std.mem.concat(alloc, u8, &.{stem, replacement_ext});
+    const stem = filepath[0 .. filepath.len - original_ext.len];
+    return try std.mem.concat(alloc, u8, &.{ stem, replacement_ext });
 }

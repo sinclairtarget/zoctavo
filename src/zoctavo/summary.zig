@@ -59,7 +59,7 @@ pub fn load(
         },
     };
 
-    const entries = try alloc.dupe(Entry, &.{chapter_one, chapter_two});
+    const entries = try alloc.dupe(Entry, &.{ chapter_one, chapter_two });
     return .{
         .src_filepath = "SUMMARY.md",
         .entries = entries,
