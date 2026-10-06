@@ -2,7 +2,6 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Io = std.Io;
 
-const atrus = @import("atrus");
 const zoctavo = @import("zoctavo");
 
 const cli = @import("cli.zig");
