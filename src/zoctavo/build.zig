@@ -2,6 +2,8 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Io = std.Io;
 
+const utils = @import("utils");
+
 const book = @import("book.zig");
 const summary = @import("summary.zig");
 
@@ -45,7 +47,7 @@ pub fn run(io: Io, alloc: Allocator, ws: Workspace) BuildError!void {
     for (summ.entries) |entry| {
         switch (entry) {
             .chapter => |chapter| {
-                const dest_filepath = try replaceExtAlloc(
+                const dest_filepath = try utils.path.replaceExtAlloc(
                     alloc,
                     chapter.src_filepath,
                     ".md",
@@ -110,19 +112,4 @@ fn removeDirRecursive(io: Io, dirpath: []const u8) !void {
     cwd.deleteTree(io, dirpath) catch {
         return CleanError.DeleteBuildDirectoryFailed;
     };
-}
-
-/// Replaces existing extension with a new one. Asserts that the given filepath
-/// indeed has the original extension.
-fn replaceExtAlloc(
-    alloc: Allocator,
-    filepath: []const u8,
-    original_ext: []const u8,
-    replacement_ext: []const u8,
-) ![]const u8 {
-    const actual_ext = std.fs.path.extension(filepath);
-    std.debug.assert(std.mem.eql(u8, actual_ext, original_ext));
-
-    const stem = filepath[0..filepath.len - original_ext.len];
-    return try std.mem.concat(alloc, u8, &.{stem, replacement_ext});
 }
