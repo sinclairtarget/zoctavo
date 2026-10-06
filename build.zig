@@ -8,13 +8,13 @@ pub fn build(b: *std.Build) void {
     const atrus = b.dependency("atrus", .{ .target = target });
 
     const utils_module = b.createModule(.{
-        .root_source_file = b.path("src/utils/root.zig"),
+        .root_source_file = b.path("lib/utils/root.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const zoctavo_module = b.addModule("zoctavo", .{
-        .root_source_file = b.path("src/zoctavo/root.zig"),
+        .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
         .imports = &.{
