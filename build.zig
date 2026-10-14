@@ -10,13 +10,13 @@ pub fn build(b: *std.Build) void {
     const atrus = b.dependency("atrus", .{ .target = target });
 
     const utils_module = b.createModule(.{
-        .root_source_file = b.path("lib/utils/root.zig"),
+        .root_source_file = b.path("src/utils/root.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const zoctavo_module = b.addModule("zoctavo", .{
-        .root_source_file = b.path("lib/zoctavo/root.zig"),
+        .root_source_file = b.path("src/zoctavo/root.zig"),
         .target = target,
         .optimize = optimize,
         .imports = &.{
@@ -31,7 +31,7 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "zoctavo",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("src/main.zig"),
+            .root_source_file = b.path("src/cli/main.zig"),
             .target = target,
             .optimize = optimize,
             .imports = &.{
